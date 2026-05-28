@@ -1,0 +1,10 @@
+{
+  "name": "CC1101 RF Bridge",
+  "version": "1.0.0",
+  "build": {
+    "include": [
+      "custom_components/cc1101/cc1101.h",
+      "custom_components/cc1101/cc1101.cpp"
+    ]
+  }
+}
