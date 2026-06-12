@@ -1,5 +1,6 @@
 {
-  "name": "cc1101_custom",
+  "domain": "cc1101_custom",
+  "name": "CC1101 Custom Driver",
   "version": "1.0.0",
   "files": [
     "component.py",
@@ -8,3 +9,4 @@
     "registers.h"
   ]
 }
+
