@@ -1,0 +1,10 @@
+{
+  "name": "cc1101_custom",
+  "version": "1.0.0",
+  "files": [
+    "component.py",
+    "cc1101_custom.h",
+    "cc1101_custom.cpp",
+    "registers.h"
+  ]
+}
