@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome import pins
+import esphome.pins as pins
 
 cc1101_ns = cg.esphome_ns.namespace("cc1101_custom")
 CC1101CustomComponent = cc1101_ns.class_("CC1101CustomComponent", cg.Component)
