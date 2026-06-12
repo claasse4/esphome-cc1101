@@ -1,9 +1,15 @@
 {
   "domain": "cc1101_custom",
   "name": "CC1101 Custom Component",
-  "version": "1.0.0",
-  "documentation": "https://github.com/claasse4/esphome-cc1101-custom",
-  "requirements": [],
-  "dependencies": [],
+  "version": "1.0",
+  "build": {
+    "include": [
+      "cc1101_custom.cpp"
+    ],
+    "src_filter": [
+      "+<cc1101_custom.cpp>"
+    ],
+    "framework": "esp-idf"
+  },
   "codeowners": ["@claasse4"]
 }
