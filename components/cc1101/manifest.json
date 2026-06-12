@@ -1,9 +1,0 @@
-{
-  "domain": "cc1101",
-  "name": "CC1101 RF Component",
-  "version": "1.0.0",
-  "documentation": "https://github.com/claasse4/esphome-cc1101",
-  "requirements": [],
-  "dependencies": [],
-  "codeowners": ["@claasse4"]
-}
