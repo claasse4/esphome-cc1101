@@ -1,12 +1,9 @@
 {
   "domain": "cc1101_custom",
-  "name": "CC1101 Custom Driver",
+  "name": "CC1101 Custom Component",
   "version": "1.0.0",
-  "files": [
-    "component.py",
-    "cc1101_custom.h",
-    "cc1101_custom.cpp",
-    "registers.h"
-  ]
+  "documentation": "https://github.com/claasse4/esphome-cc1101-custom",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@claasse4"]
 }
-
