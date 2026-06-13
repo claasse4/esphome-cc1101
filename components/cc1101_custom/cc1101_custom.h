@@ -31,5 +31,7 @@ class CC1101CustomComponent : public Component {
   spi_device_handle_t spi_{nullptr};
 };
 
+static volatile bool gdo0_flag;
+
 }  // namespace cc1101_custom
 }  // namespace esphome
