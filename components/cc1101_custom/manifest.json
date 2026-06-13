@@ -3,12 +3,8 @@
   "name": "CC1101 Custom Component",
   "version": "1.0",
   "build": {
-    "include": [
-      "cc1101_custom.cpp"
-    ],
-    "src_filter": [
-      "+<cc1101_custom.cpp>"
-    ],
+    "include": ["cc1101_custom.cpp"],
+    "src_filter": ["+<cc1101_custom.cpp>"],
     "framework": "esp-idf"
   },
   "codeowners": ["@claasse4"]
