@@ -126,6 +126,12 @@ void CC1101Custom::loop() {
       pulse_count = 0;
     }
   }
+bool s = gdo0_pin_->digital_read();
+static bool last = false;
+if (s != last) {
+  last = s;
+  ESP_LOGI("cc1101", "GDO0 changed: %d", s);
+}
 
   // ⭐ BELANGRIJK: WiFi stack laten draaien
   yield();
