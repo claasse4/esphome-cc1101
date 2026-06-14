@@ -1,7 +1,16 @@
+#pragma once
+
+#include "esphome/core/component.h"
+#include "esphome/core/log.h"
+#include "esphome/core/hal.h"
+#include "esphome/core/gpio.h"
+#include <cstdint>
+#include <driver/spi_master.h>
+
 namespace esphome {
 namespace cc1101_custom {
 
-class CC1101CustomComponent : public Component {
+class CC1101Custom : public Component {
  public:
   void set_cs_pin(GPIOPin *pin) { cs_pin_ = pin; }
   void set_gdo0_pin(GPIOPin *pin) { gdo0_pin_ = pin; }
@@ -9,8 +18,6 @@ class CC1101CustomComponent : public Component {
   void setup() override;
   void dump_config() override;
   void loop() override;
-
-  static volatile bool gdo0_flag;   // <-- HIER
 
  protected:
   void strobe(uint8_t cmd);
