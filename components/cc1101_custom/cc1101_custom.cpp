@@ -3,6 +3,8 @@
 namespace esphome {
 namespace cc1101_custom {
 
+volatile bool CC1101CustomComponent::gdo0_flag = false;
+
 void CC1101CustomComponent::setup() {
   ESP_LOGI("cc1101", "Initializing CC1101...");
 
@@ -77,8 +79,6 @@ uint8_t CC1101CustomComponent::read_reg(uint8_t reg) {
 
   return t.rx_data[1];
 }
-
-volatile bool CC1101CustomComponent::gdo0_flag = false;
 
 }  // namespace cc1101_custom
 }  // namespace esphome
