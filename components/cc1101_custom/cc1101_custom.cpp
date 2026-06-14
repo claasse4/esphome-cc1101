@@ -165,6 +165,8 @@ uint8_t CC1101Custom::read_reg(uint8_t reg) {
   spi_device_transmit(spi_, &t);
   return rx[1];
 }
+// allow WiFi stack to run
+delayMicroseconds(50);
 
 }  // namespace cc1101_custom
 }  // namespace esphome
