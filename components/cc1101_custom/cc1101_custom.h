@@ -16,8 +16,8 @@ class CC1101Custom : public Component {
   void set_gdo0_pin(GPIOPin *pin) { gdo0_pin_ = pin; }
 
   void setup() override;
-  void dump_config() override;
   void loop() override;
+  void dump_config() override;
 
  protected:
   void strobe(uint8_t cmd);
