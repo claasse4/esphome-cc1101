@@ -3,14 +3,15 @@
 namespace esphome {
 namespace cc1101_custom {
 
-static const char *const TAG = "cc1101_custom";
+static const char *const TAG = "cc1101";
 
 void CC1101Custom::setup() {
-  ESP_LOGI(TAG, "Initializing CC1101...");
+  ESP_LOGI(TAG, "Initializing CC1101 in OOK RX mode...");
 
   cs_pin_->setup();
   gdo0_pin_->setup();
 
+  // --- SPI bus init ---
   spi_bus_config_t buscfg = {};
   buscfg.mosi_io_num = 23;
   buscfg.miso_io_num = 19;
@@ -28,24 +29,84 @@ void CC1101Custom::setup() {
 
   ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &devcfg, &spi_));
 
-  strobe(0x30);  // CC1101_SRES
-}
+  // --- CC1101 register init for 433.92 MHz OOK ---
+  write_reg(0x00, 0x0D);  // IOCFG2
+  write_reg(0x02, 0x06);  // IOCFG0: async serial data on GDO0
+  write_reg(0x0B, 0x06);  // FSCTRL1
+  write_reg(0x0C, 0x00);  // FSCTRL0
+  write_reg(0x0D, 0x10);  // FREQ2
+  write_reg(0x0E, 0xA7);  // FREQ1
+  write_reg(0x0F, 0x62);  // FREQ0  => 433.92 MHz
 
-void CC1101Custom::dump_config() {
-  ESP_LOGCONFIG(TAG, "CC1101 Custom Component");
+  write_reg(0x12, 0x00);  // MDMCFG2: ASK/OOK
+  write_reg(0x13, 0x22);  // MDMCFG1
+  write_reg(0x14, 0xF8);  // MDMCFG0
+
+  write_reg(0x15, 0x34);  // DEVIATN
+  write_reg(0x18, 0x18);  // MCSM0
+  write_reg(0x19, 0x16);  // FOCCFG
+  write_reg(0x1A, 0x6C);  // BSCFG
+  write_reg(0x1B, 0x03);  // AGCCTRL2
+  write_reg(0x1C, 0x40);  // AGCCTRL1
+  write_reg(0x1D, 0x91);  // AGCCTRL0
+
+  write_reg(0x21, 0x56);  // FREND1
+  write_reg(0x22, 0x10);  // FREND0
+
+  write_reg(0x23, 0xE9);  // FSCAL3
+  write_reg(0x24, 0x2A);  // FSCAL2
+  write_reg(0x25, 0x00);  // FSCAL1
+  write_reg(0x26, 0x1F);  // FSCAL0
+
+  strobe(0x34); // SRX (enter receive mode)
+
+  ESP_LOGI(TAG, "CC1101 ready, listening for OOK pulses...");
 }
 
 void CC1101Custom::loop() {
+  static uint32_t last_change = 0;
+  static bool last_state = false;
+
+  bool state = gdo0_pin_->digital_read();
+  uint32_t now = micros();
+
+  if (state != last_state) {
+    uint32_t pulse = now - last_change;
+    last_change = now;
+    last_state = state;
+
+    ESP_LOGI(TAG, "Pulse: %u us, level=%d", pulse, state);
+  }
+}
+
+void CC1101Custom::dump_config() {
+  ESP_LOGCONFIG(TAG, "CC1101 Custom Component (OOK RX)");
 }
 
 void CC1101Custom::strobe(uint8_t cmd) {
+  spi_transaction_t t = {};
+  t.length = 8;
+  t.tx_buffer = &cmd;
+  spi_device_transmit(spi_, &t);
 }
 
 void CC1101Custom::write_reg(uint8_t reg, uint8_t value) {
+  uint8_t buf[2] = { reg, value };
+  spi_transaction_t t = {};
+  t.length = 16;
+  t.tx_buffer = buf;
+  spi_device_transmit(spi_, &t);
 }
 
 uint8_t CC1101Custom::read_reg(uint8_t reg) {
-  return 0;
+  uint8_t tx[2] = { static_cast<uint8_t>(reg | 0x80), 0x00 };
+  uint8_t rx[2] = {};
+  spi_transaction_t t = {};
+  t.length = 16;
+  t.tx_buffer = tx;
+  t.rx_buffer = rx;
+  spi_device_transmit(spi_, &t);
+  return rx[1];
 }
 
 }  // namespace cc1101_custom
