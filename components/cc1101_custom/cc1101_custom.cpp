@@ -67,7 +67,6 @@ void CC1101Custom::loop() {
   static uint32_t last_change = 0;
   static bool last_state = false;
 
-  // buffer voor pulses
   static uint32_t pulses[200];
   static int pulse_count = 0;
 
@@ -79,61 +78,57 @@ void CC1101Custom::loop() {
     last_change = now;
     last_state = state;
 
-    // filter: negeer alles > 20 ms (overflow / idle)
-    if (pulse > 20000) {
-      pulse_count = 0;
-      return;
-    }
+    // filter: ignore pulses > 20 ms (overflow / idle)
+    if (pulse <= 20000) {
+      if (pulse_count < 200) {
+        pulses[pulse_count++] = pulse;
+      }
 
-    // opslaan
-    if (pulse_count < 200) {
-      pulses[pulse_count++] = pulse;
-    }
+      ESP_LOGD(TAG, "Pulse: %u us, level=%d", pulse, state);
 
-    // debug (optioneel, kan je uitzetten als het teveel wordt)
-    ESP_LOGD(TAG, "Pulse: %u us, level=%d", pulse, state);
+      // sync detectie: APA3/NEXA heeft ~10 ms pauze
+      if (pulse > 8000) {
+        if (pulse_count > 40) {
+          int bitpos = 0;
+          uint32_t code = 0;
 
-    // sync detectie: APA3/NEXA heeft ~10 ms pauze
-    if (pulse > 8000) {
-      if (pulse_count > 40) {
-        int bitpos = 0;
-        uint32_t code = 0;
+          for (int i = 0; i < pulse_count - 2; i += 2) {
+            uint32_t p1 = pulses[i];
+            uint32_t p2 = pulses[i + 1];
 
-        for (int i = 0; i < pulse_count - 2; i += 2) {
-          uint32_t p1 = pulses[i];
-          uint32_t p2 = pulses[i + 1];
+            bool short1 = p1 < 600;
+            bool short2 = p2 < 600;
 
-          bool short1 = p1 < 600;
-          bool short2 = p2 < 600;
+            if (short1 && !short2) {
+              code = (code << 1) | 0;
+              bitpos++;
+            } else if (!short1 && short2) {
+              code = (code << 1) | 1;
+              bitpos++;
+            }
+          }
 
-          if (short1 && !short2) {
-            // 0 = kort + lang
-            code = (code << 1) | 0;
-            bitpos++;
-          } else if (!short1 && short2) {
-            // 1 = lang + kort
-            code = (code << 1) | 1;
-            bitpos++;
-          } else {
-            // floating / invalid -> negeren
+          if (bitpos >= 32) {
+            uint32_t address = (code >> 6) & 0x3FFFFFF;
+            uint8_t unit = (code >> 2) & 0x0F;
+            bool on = (code >> 1) & 0x01;
+
+            ESP_LOGI(TAG,
+                     "APA3/NEXA: addr=%u unit=%u state=%s (bits=%d)",
+                     address, unit, on ? "ON" : "OFF", bitpos);
           }
         }
 
-        if (bitpos >= 32) {
-          uint32_t address = (code >> 6) & 0x3FFFFFF;
-          uint8_t unit = (code >> 2) & 0x0F;
-          bool on = (code >> 1) & 0x01;
-
-          ESP_LOGI(TAG,
-                   "APA3/NEXA: addr=%u unit=%u state=%s (bits=%d)",
-                   address, unit, on ? "ON" : "OFF", bitpos);
-        }
+        pulse_count = 0;
       }
-
-      // buffer reset na sync
+    } else {
+      // grote pulse → reset buffer
       pulse_count = 0;
     }
   }
+
+  // ⭐ BELANGRIJK: WiFi stack laten draaien
+  yield();
 }
 
 void CC1101Custom::dump_config() {
@@ -165,8 +160,6 @@ uint8_t CC1101Custom::read_reg(uint8_t reg) {
   spi_device_transmit(spi_, &t);
   return rx[1];
 }
-// allow WiFi stack to run
-delayMicroseconds(50);
 
 }  // namespace cc1101_custom
 }  // namespace esphome
