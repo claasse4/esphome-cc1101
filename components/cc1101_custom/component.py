@@ -3,10 +3,10 @@ import esphome.config_validation as cv
 import esphome.pins as pins
 
 cc1101_ns = cg.esphome_ns.namespace("cc1101_custom")
-CC1101CustomComponent = cc1101_ns.class_("CC1101CustomComponent", cg.Component)
+CC1101Custom = cc1101_ns.class_("CC1101Custom", cg.Component)
 
 CONFIG_SCHEMA = cv.Schema({
-    cv.GenerateID(): cv.declare_id(CC1101CustomComponent),
+    cv.GenerateID(): cv.declare_id(CC1101Custom),
     cv.Required("cs_pin"): pins.gpio_output_pin_schema,
     cv.Required("gdo0_pin"): pins.gpio_input_pin_schema,
 })
