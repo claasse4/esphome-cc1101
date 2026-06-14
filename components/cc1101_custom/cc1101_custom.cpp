@@ -38,7 +38,10 @@ void CC1101Custom::setup() {
   write_reg(0x0E, 0xA7);  // FREQ1
   write_reg(0x0F, 0x62);  // FREQ0  => 433.92 MHz
 
-  write_reg(0x12, 0x00);  // MDMCFG2: ASK/OOK
+  write_reg(0x12, 0x30);  // ASK/OOK + sync mode off
+  write_reg(0x07, 0x00);  // PKTCTRL1: no address check
+  write_reg(0x08, 0x00);  // PKTCTRL0: async serial mode
+  write_reg(0x02, 0x06);  // IOCFG0: GDO0 = async serial data
   write_reg(0x13, 0x22);  // MDMCFG1
   write_reg(0x14, 0xF8);  // MDMCFG0
 
