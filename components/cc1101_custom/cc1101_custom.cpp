@@ -67,6 +67,10 @@ void CC1101Custom::loop() {
   static uint32_t last_change = 0;
   static bool last_state = false;
 
+  // buffer voor pulses
+  static uint32_t pulses[200];
+  static int pulse_count = 0;
+
   bool state = gdo0_pin_->digital_read();
   uint32_t now = micros();
 
@@ -75,12 +79,65 @@ void CC1101Custom::loop() {
     last_change = now;
     last_state = state;
 
-    ESP_LOGI(TAG, "Pulse: %u us, level=%d", pulse, state);
+    // filter: negeer alles > 20 ms (overflow / idle)
+    if (pulse > 20000) {
+      pulse_count = 0;
+      return;
+    }
+
+    // opslaan
+    if (pulse_count < 200) {
+      pulses[pulse_count++] = pulse;
+    }
+
+    // debug (optioneel, kan je uitzetten als het teveel wordt)
+    ESP_LOGD(TAG, "Pulse: %u us, level=%d", pulse, state);
+
+    // sync detectie: APA3/NEXA heeft ~10 ms pauze
+    if (pulse > 8000) {
+      if (pulse_count > 40) {
+        int bitpos = 0;
+        uint32_t code = 0;
+
+        for (int i = 0; i < pulse_count - 2; i += 2) {
+          uint32_t p1 = pulses[i];
+          uint32_t p2 = pulses[i + 1];
+
+          bool short1 = p1 < 600;
+          bool short2 = p2 < 600;
+
+          if (short1 && !short2) {
+            // 0 = kort + lang
+            code = (code << 1) | 0;
+            bitpos++;
+          } else if (!short1 && short2) {
+            // 1 = lang + kort
+            code = (code << 1) | 1;
+            bitpos++;
+          } else {
+            // floating / invalid -> negeren
+          }
+        }
+
+        if (bitpos >= 32) {
+          uint32_t address = (code >> 6) & 0x3FFFFFF;
+          uint8_t unit = (code >> 2) & 0x0F;
+          bool on = (code >> 1) & 0x01;
+
+          ESP_LOGI(TAG,
+                   "APA3/NEXA: addr=%u unit=%u state=%s (bits=%d)",
+                   address, unit, on ? "ON" : "OFF", bitpos);
+        }
+      }
+
+      // buffer reset na sync
+      pulse_count = 0;
+    }
   }
 }
 
 void CC1101Custom::dump_config() {
-  ESP_LOGCONFIG(TAG, "CC1101 Custom Component (OOK RX)");
+  ESP_LOGCONFIG(TAG, "CC1101 Custom Component (OOK RX, APA3/NEXA decode)");
 }
 
 void CC1101Custom::strobe(uint8_t cmd) {
@@ -91,7 +148,7 @@ void CC1101Custom::strobe(uint8_t cmd) {
 }
 
 void CC1101Custom::write_reg(uint8_t reg, uint8_t value) {
-  uint8_t buf[2] = { reg, value };
+  uint8_t buf[2] = {reg, value};
   spi_transaction_t t = {};
   t.length = 16;
   t.tx_buffer = buf;
@@ -99,7 +156,7 @@ void CC1101Custom::write_reg(uint8_t reg, uint8_t value) {
 }
 
 uint8_t CC1101Custom::read_reg(uint8_t reg) {
-  uint8_t tx[2] = { static_cast<uint8_t>(reg | 0x80), 0x00 };
+  uint8_t tx[2] = {static_cast<uint8_t>(reg | 0x80), 0x00};
   uint8_t rx[2] = {};
   spi_transaction_t t = {};
   t.length = 16;
