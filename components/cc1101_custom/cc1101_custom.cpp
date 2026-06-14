@@ -62,6 +62,8 @@ void CC1101Custom::setup() {
   write_reg(0x26, 0x1F);  // FSCAL0
 
   strobe(0x34); // SRX (enter receive mode)
+  strobe(0x36); // SIDLE
+  strobe(0x34); // SRX
 
   ESP_LOGI(TAG, "CC1101 ready, listening for OOK pulses...");
 }
