@@ -1,14 +1,3 @@
-#pragma once
-
-#include "esphome/core/component.h"
-#include "esphome/core/hal.h"
-
-extern "C" {
-  #include "driver/spi_master.h"
-}
-
-#include "registers.h"
-
 namespace esphome {
 namespace cc1101_custom {
 
@@ -19,6 +8,9 @@ class CC1101CustomComponent : public Component {
 
   void setup() override;
   void dump_config() override;
+  void loop() override;
+
+  static volatile bool gdo0_flag;   // <-- HIER
 
  protected:
   void strobe(uint8_t cmd);
@@ -27,11 +19,8 @@ class CC1101CustomComponent : public Component {
 
   GPIOPin *cs_pin_{nullptr};
   GPIOPin *gdo0_pin_{nullptr};
-
   spi_device_handle_t spi_{nullptr};
 };
-
-static volatile bool gdo0_flag;
 
 }  // namespace cc1101_custom
 }  // namespace esphome
