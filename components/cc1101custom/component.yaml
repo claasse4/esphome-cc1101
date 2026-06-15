@@ -6,7 +6,5 @@ config_schema:
   gdo2_pin: int
 
 code_generation:
-  - key: cs_pin
-    type: int
-  - key: gdo2_pin
-    type: int
+  class: CC1101Custom
+  constructor: [cs_pin, gdo2_pin]
