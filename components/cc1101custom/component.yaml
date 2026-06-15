@@ -4,3 +4,9 @@ version: 1.0
 config_schema:
   cs_pin: int
   gdo2_pin: int
+
+code_generation:
+  - key: cs_pin
+    type: int
+  - key: gdo2_pin
+    type: int
