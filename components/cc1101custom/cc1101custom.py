@@ -22,4 +22,3 @@ async def to_code(config):
         config[CONF_GDO2_PIN],
     )
     await cg.register_component(var, config)
-
