@@ -1,15 +1,6 @@
-name: "cc1101custom"
-version: "1.0"
+name: cc1101custom
+version: 1.0
 
-files:
-  - cc1101_custom.cpp
-  - cc1101_custom.h
-
-config:
-  cs_pin:
-    type: gpio
-    required: true
-  gdo2_pin:
-    type: gpio
-    required: true
-
+config_schema:
+  cs_pin: int
+  gdo2_pin: int
