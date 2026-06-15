@@ -13,7 +13,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Required(CONF_CS_PIN): cv.int_,
         cv.Required(CONF_GDO2_PIN): cv.int_,
     }
-)
+).extend(cv.COMPONENT_SCHEMA)
 
 async def to_code(config):
     var = cg.new_Pvariable(
