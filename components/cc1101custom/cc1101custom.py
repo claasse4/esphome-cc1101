@@ -23,5 +23,3 @@ async def to_code(config):
     )
     await cg.register_component(var, config)
 
-# ⭐ DEZE REGEL IS CRUCIAAL ⭐
-cv.register_component("cc1101custom", CONFIG_SCHEMA)
