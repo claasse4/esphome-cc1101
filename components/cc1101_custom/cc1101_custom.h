@@ -1,33 +1,20 @@
 #pragma once
-
-#include "esphome/core/component.h"
-#include "esphome/core/log.h"
-#include "esphome/core/hal.h"
-#include "esphome/core/gpio.h"
-#include <cstdint>
-#include <driver/spi_master.h>
-
-namespace esphome {
-namespace cc1101_custom {
+#include "esphome.h"
+#include "driver/gpio.h"
 
 class CC1101Custom : public Component {
  public:
+  GPIOPin *cs_pin_;
+  GPIOPin *gdo2_pin_;
+
   void set_cs_pin(GPIOPin *pin) { cs_pin_ = pin; }
-  void set_gdo0_pin(GPIOPin *pin) { gdo0_pin_ = pin; }
+  void set_gdo2_pin(GPIOPin *pin) { gdo2_pin_ = pin; }
 
   void setup() override;
   void loop() override;
   void dump_config() override;
 
  protected:
-  void strobe(uint8_t cmd);
-  void write_reg(uint8_t reg, uint8_t value);
-  uint8_t read_reg(uint8_t reg);
-
-  GPIOPin *cs_pin_{nullptr};
-  GPIOPin *gdo0_pin_{nullptr};
-  spi_device_handle_t spi_{nullptr};
+  volatile uint32_t last_edge_us_ = 0;
+  static void IRAM_ATTR gdo2_isr_handler(void *arg);
 };
-
-}  // namespace cc1101_custom
-}  // namespace esphome
