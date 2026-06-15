@@ -23,5 +23,5 @@ async def to_code(config):
     )
     await cg.register_component(var, config)
 
-# Register the component name so ESPHome knows this is a YAML component
+# ⭐ DEZE REGEL IS CRUCIAAL ⭐
 cv.register_component("cc1101custom", CONFIG_SCHEMA)
