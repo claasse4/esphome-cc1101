@@ -5,7 +5,6 @@ from esphome.const import CONF_ID
 
 cc1101_ns = cg.esphome_ns.namespace("cc1101_custom")
 CC1101Custom = cc1101_ns.class_("CC1101Custom", cg.Component)
-
 BeginRxAction = cc1101_ns.class_("BeginRxAction", automation.Action)
 
 CONFIG_SCHEMA = cv.Schema({
