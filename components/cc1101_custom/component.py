@@ -5,6 +5,8 @@ import esphome.automation as automation
 from esphome.components import spi
 from esphome.const import CONF_ID
 
+DOMAIN = "cc1101_custom"
+
 cc1101_ns = cg.esphome_ns.namespace("cc1101_custom")
 CC1101Custom = cc1101_ns.class_("CC1101Custom", cg.Component, spi.SPIDevice)
 
