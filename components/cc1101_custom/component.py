@@ -29,11 +29,11 @@ def to_code(config):
     return var
 
 # -----------------------------
-# ACTION: cc1101.begin_rx
+# ACTION: cc1101_custom.begin_rx
 # -----------------------------
 
 @automation.register_action(
-    "cc1101.begin_rx",
+    "cc1101_custom.begin_rx",
     automation.Action,
     cv.Schema({cv.Required(CONF_ID): cv.use_id(CC1101Custom)})
 )
