@@ -1,1 +1,2 @@
-from .cc1101custom import CC1101Custom
+from .component import CC1101Custom
+
