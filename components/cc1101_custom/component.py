@@ -1,5 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+import esphome.pins as pins
 from esphome.components import spi
 from esphome.const import CONF_ID
 
@@ -9,8 +10,8 @@ CC1101Custom = cc1101_ns.class_("CC1101Custom", cg.Component, spi.SPIDevice)
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(CC1101Custom),
     cv.Required("spi_id"): cv.use_id(spi.SPIComponent),
-    cv.Required("cs_pin"): cv.pin,
-    cv.Required("gdo0_pin"): cv.pin,
+    cv.Required("cs_pin"): pins.gpio_pin_schema,
+    cv.Required("gdo0_pin"): pins.gpio_pin_schema,
     cv.Required("frequency"): cv.string,
     cv.Required("modulation_type"): cv.string,
 })
