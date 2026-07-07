@@ -1,8 +1,9 @@
 {
-  "domain": "cc1101_custom",
-  "name": "CC1101 Custom Driver",
-  "version": "1.0.0",
-  "requirements": [],
-  "dependencies": [],
-  "codeowners": ["@claasse4"]
+  "name": "cc1101_custom",
+  "version": "1.0",
+  "files": [
+    "cc1101_custom.h",
+    "cc1101_custom.cpp"
+  ]
 }
+
