@@ -1,23 +1,29 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/core/log.h"
+#include "esphome/components/spi/spi.h"
 
 namespace esphome {
-namespace cc1101custom {
+namespace cc1101_custom {
 
-class CC1101Custom : public Component {
+class CC1101Custom : public Component, public spi::SPIDevice {
  public:
-  CC1101Custom(int cs_pin, int gdo2_pin)
-      : cs_pin_(cs_pin), gdo2_pin_(gdo2_pin) {}
-
   void setup() override;
-  void loop() override {}
+  void loop() override;
+
+  void set_cs_pin(GPIOPin *pin) { cs_pin_ = pin; }
+  void set_gdo0_pin(GPIOPin *pin) { gdo0_pin_ = pin; }
+  void set_frequency(const std::string &freq) { frequency_ = freq; }
+  void set_modulation_type(const std::string &mod) { modulation_type_ = mod; }
+
+  void begin_rx();   // ACTION
 
  protected:
-  int cs_pin_;
-  int gdo2_pin_;
+  GPIOPin *cs_pin_{nullptr};
+  GPIOPin *gdo0_pin_{nullptr};
+  std::string frequency_;
+  std::string modulation_type_;
 };
 
-}  // namespace cc1101custom
+}  // namespace cc1101_custom
 }  // namespace esphome
