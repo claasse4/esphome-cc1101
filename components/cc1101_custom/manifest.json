@@ -3,7 +3,10 @@
   "version": "1.0",
   "files": [
     "cc1101_custom.h",
-    "cc1101_custom.cpp"
+    "cc1101_custom.cpp",
+    "__init__.py"
+  ],
+  "actions": [
+    "cc1101_custom.begin_rx"
   ]
 }
-
