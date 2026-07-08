@@ -3,6 +3,7 @@ print("### CC1101_CUSTOM PYTHON MODULE LOADED ###")
 import esphome.codegen as cg
 import esphome.config_validation as cv
 import esphome.automation as automation
+import esphome.pins as pins
 from esphome.const import CONF_ID
 
 # Namespace + classes
@@ -17,13 +18,13 @@ BeginRxAction = cc1101_ns.class_("BeginRxAction", automation.Action)
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(CC1101Custom),
 
-    cv.Required("spi_id"): cv.use_id(cg.global_ns.class_("SPIComponent")),
-    cv.Required("cs_pin"): cv.Any(),
-    cv.Required("gdo0_pin"): cv.Any(),
+    cv.Required("spi_id"): cv.use_id(cg.spi_bus),
+    cv.Required("cs_pin"): pins.gpio_output_pin_schema,
+    cv.Required("gdo0_pin"): pins.gpio_input_pin_schema,
 
-    cv.Optional("frequency", default="433.92MHz"): cv.string,
-    cv.Optional("modulation_type", default="ASK/OOK"): cv.string,
-})
+    cv.Required("frequency"): cv.int_range(min=100000, max=1000000000),
+    cv.Required("modulation_type"): cv.one_of("ASK", "OOK"),
+}).extend(cv.COMPONENT_SCHEMA)
 
 # ---------------------------
 # to_code()
@@ -31,6 +32,7 @@ CONFIG_SCHEMA = cv.Schema({
 
 def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
+    cg.register_component(var, config)
 
     cg.add(var.set_spi(config["spi_id"]))
     cg.add(var.set_cs_pin(config["cs_pin"]))
