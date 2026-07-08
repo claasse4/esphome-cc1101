@@ -1,3 +1,5 @@
+print("### CC1101_CUSTOM PYTHON MODULE LOADED ###")
+
 import esphome.codegen as cg
 import esphome.automation as automation
 import esphome.config_validation as cv
@@ -23,8 +25,8 @@ def to_code(config):
     })
 )
 def begin_rx_to_code(config, action_id):
+    print("### ACTION cc1101_custom.begin_rx REGISTERED ###")
     var = cg.new_Pvariable(action_id)
     parent = cg.get_variable(config[CONF_ID])
     cg.add(var.set_parent(parent))
     return var
-
