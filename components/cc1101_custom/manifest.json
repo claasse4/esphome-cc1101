@@ -1,12 +1,14 @@
 {
-  "name": "cc1101_custom",
-  "version": "1.0",
+  "domain": "cc1101_custom",
+  "name": "CC1101 Custom Component",
+  "version": "1.0.0",
+  "documentation": "https://github.com/claasse4/esphome-cc1101-custom",
+  "requirements": [],
+  "codeowners": ["@claasse4"],
+  "dependencies": [],
   "files": [
     "cc1101_custom.h",
     "cc1101_custom.cpp",
     "__init__.py"
-  ],
-  "actions": [
-    "cc1101_custom.begin_rx"
   ]
 }
